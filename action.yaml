@@ -14,7 +14,7 @@ inputs:
     description: 'Base64 encoded password to access the p12 maven keystore'
     required: true
   company-rootca:
-    description: 'Base64 encoded content of company's root CA certififcate'
+    description: "Base64 encoded content of company's root CA certififcate"
     required: true
 runs:
   using: "composite"
