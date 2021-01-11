@@ -1,0 +1,15 @@
+name: "Java and mvn setup"
+description: "Setups java and maven with versions: java11-maven-3-6"
+author: "Soren Mathiasen"
+inputs:
+  run: # id of input
+    description: "CMD to run inside the container"
+    required: true
+runs:
+  using: "docker"
+  image: "docker://eu.gcr.io/tradeshift-public/java11-maven-3-6:master"
+  args:
+    - ${{ inputs.run }}
+branding:
+  icon: "check-square"
+  color: "blue"

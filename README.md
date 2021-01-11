@@ -2,6 +2,37 @@
 
 Setups certs to access private maven repos to support MTLS
 
+## Usage in the workflow java maven action
+
+Ex: java11 maven 3.6
+
+```
+name: JAVA-PR
+on: [pull_request]
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run maven cmd in specified environmment
+        uses: tradeshift/actions-maven/java11-mvn-3-6@master
+        with:
+          run: |
+            mvn -Dspring.profiles.active=local clean package -DskipTests
+        env:
+          MAVEN_SETTINGS_B64: ${{ secrets.MAVEN_SETTINGS }}
+          MAVEN_SETTINGS_SECURITY_B64: ${{ secrets.MAVEN_SECURITY }}
+          MAVEN_P12_B64: ${{ secrets.MAVEN_P12 }}
+          MAVEN_P12_PASSWORD: ${{ secrets.MAVEN_P12_PASSWORD }}
+          ROOTCA_B64: ${{ secrets.CACERT }}
+
+```
+
 ## Usage in the workflow
 
 ```
