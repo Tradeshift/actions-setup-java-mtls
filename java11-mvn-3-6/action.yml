@@ -7,7 +7,7 @@ inputs:
     required: true
 runs:
   using: "docker"
-  image: "docker://eu.gcr.io/tradeshift-public/java11-maven-3-6:master"
+  image: "docker://eu.gcr.io/tradeshift-public/java11-maven-3-6:74b0db1158624afd44bc43a5c508c8f3a27f2177"
   args:
     - ${{ inputs.run }}
 branding:
