@@ -1,15 +1,37 @@
-name: "Java and mvn setup"
-description: "Setups java and maven with versions: java11-maven-3-6"
-author: "Soren Mathiasen"
+name: "Run dockerised Maven action"
+description: "Runs dockerised maven action"
 inputs:
-  run: # id of input
-    description: "CMD to run inside the container"
+  run:
+    description: "Script to run the action"
     required: true
 runs:
-  using: "docker"
-  image: "docker://eu.gcr.io/tradeshift-public/java11-maven-3-6:master"
-  args:
-    - ${{ inputs.run }}
-branding:
-  icon: "check-square"
-  color: "blue"
+  using: "composite"
+  steps:
+    - id: run the dockerise action
+      shell: bash
+      run: |
+        TMP_PATH=$(echo $GITHUB_REPOSITORY | cut -d '/' -f2)
+        docker run \
+          --network=host \
+          --workdir /github/workspace \
+          --rm \
+          -e MAVEN_SETTINGS_B64 -e MAVEN_SETTINGS_SECURITY_B64 -e MAVEN_P12_B64 \
+          -e MAVEN_P12_PASSWORD -e ROOTCA_B64 -e GCLOUD_SERVICE_ACCOUNT_KEY \
+          -e MTLS_CERT_B64 -e MTLS_KEY_B64 -e SONAR_HOST -e SONAR_TOKEN \
+          -e DOCKER_HOST -e INPUT_RUN -e HOME -e GITHUB_JOB -e GITHUB_REF \
+          -e GITHUB_SHA -e GITHUB_REPOSITORY -e GITHUB_REPOSITORY_OWNER \
+          -e GITHUB_RUN_ID -e GITHUB_RUN_NUMBER -e GITHUB_RETENTION_DAYS \
+          -e GITHUB_ACTOR -e GITHUB_WORKFLOW -e GITHUB_HEAD_REF \
+          -e GITHUB_BASE_REF -e GITHUB_EVENT_NAME -e GITHUB_SERVER_URL \
+          -e GITHUB_API_URL -e GITHUB_GRAPHQL_URL -e GITHUB_WORKSPACE \
+          -e GITHUB_ACTION -e GITHUB_EVENT_PATH -e GITHUB_ACTION_REPOSITORY \
+          -e GITHUB_ACTION_REF -e GITHUB_PATH -e GITHUB_ENV -e RUNNER_OS \
+          -e RUNNER_TOOL_CACHE -e RUNNER_TEMP -e RUNNER_WORKSPACE \
+          -e ACTIONS_RUNTIME_URL -e ACTIONS_RUNTIME_TOKEN -e ACTIONS_CACHE_URL \
+          -e GITHUB_ACTIONS=true -e CI=true \
+          -v "/var/run/docker.sock":"/var/run/docker.sock" \
+          -v "/tmp/_temp/_github_home":"/github/home" \
+          -v "/tmp/_temp/_github_workflow":"/github/workflow" \
+          -v "/tmp/_temp/_runner_file_commands":"/github/file_commands" \
+          -v "/tmp/$TMP_PATH/$TMP_PATH":"/github/workspace" \
+          eu.gcr.io/tradeshift-public/java11-maven-3-6:master "${{ inputs.run }}"
