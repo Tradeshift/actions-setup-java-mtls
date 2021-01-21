@@ -7,7 +7,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - id: run the dockerise action
+    - id: run-docker-action
       shell: bash
       run: |
         TMP_PATH=$(echo $GITHUB_REPOSITORY | cut -d '/' -f2)
