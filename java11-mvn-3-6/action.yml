@@ -10,7 +10,6 @@ runs:
     - id: run-docker-action
       shell: bash
       run: |
-        TMP_PATH=$(echo $GITHUB_REPOSITORY | cut -d '/' -f2)
         docker run \
           --network=host \
           --workdir /github/workspace \
@@ -31,7 +30,7 @@ runs:
           -e GITHUB_ACTIONS=true -e CI=true \
           -v "/var/run/docker.sock":"/var/run/docker.sock" \
           -v "/tmp/_temp/_github_home":"/github/home" \
-          -v "/tmp/_temp/_github_workflow":"/github/workflow" \
+          -v "/tmp/_temp/_github_workflow":"/tmp/_temp/_github_workflow" \
           -v "/tmp/_temp/_runner_file_commands":"/github/file_commands" \
-          -v "/tmp/$TMP_PATH/$TMP_PATH":"/github/workspace" \
+          -v $(pwd):"/github/workspace" \
           eu.gcr.io/tradeshift-public/java11-maven-3-6:master "${{ inputs.run }}"
