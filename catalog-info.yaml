@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: actions-maven
+  description: |
+    Github action for building Java based projects that are using Maven
+  annotations:
+    github.com/project-slug: Tradeshift/actions-maven
+  tags:
+    - typescript
+    - github-action
+spec:
+  type: library
+  owner: developer-productivity
+  lifecycle: production
