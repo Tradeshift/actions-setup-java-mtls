@@ -7,7 +7,6 @@ metadata:
   annotations:
     github.com/project-slug: Tradeshift/actions-maven
   tags:
-    - typescript
     - github-action
 spec:
   type: library
