@@ -1,71 +1,53 @@
-# Actions maven
+# Action: Setup Java MTLS
 
-Setups certs to access private maven repos to support MTLS
+Configure certs to access private maven repos to support MTLS.
 
-## Usage in the workflow java maven action
+# Usage 
 
-Ex: java11 maven 3.6
+```
+  - uses: tradeshift/actions-setup-java-mtls@v1
+    with:
+      java-version: 11
+      maven-settings: ${{ secrets.MAVEN_SETTINGS }}
+      maven-settings: ${{ secrets.MAVEN_SECURITY }}
+      maven-p12: ${{ secrets.MAVEN_P12 }}
+      maven-p12-password: ${{ secrets.MAVEN_P12_PASSWORD }}
+      mtls-cacert: ${{ secrets.MTLS_CACERT }}
+```
 
+## Usage in a full workflow 
+Below you have an example of how to use this action in a realistic scenario, together with the `actions/java` and `tradeshift/actions-setup-maven` actions, which sets up `JDK` and `Maven`, respectively.
 ```
 name: JAVA-PR
 on: [pull_request]
 jobs:
-
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: self-hosted
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Run maven cmd in specified environmment
-        uses: tradeshift/actions-maven/java11-mvn-3-6@master
+      - uses: actions/checkout@v3
+      - id: setupJava
+        uses: actions/setup-java@v3
         with:
-          run: |
-            mvn -Dspring.profiles.active=local clean package -DskipTests
-        env:
-          MAVEN_SETTINGS_B64: ${{ secrets.MAVEN_SETTINGS }}
-          MAVEN_SETTINGS_SECURITY_B64: ${{ secrets.MAVEN_SECURITY }}
-          MAVEN_P12_B64: ${{ secrets.MAVEN_P12 }}
-          MAVEN_P12_PASSWORD: ${{ secrets.MAVEN_P12_PASSWORD }}
-          ROOTCA_B64: ${{ secrets.CACERT }}
-
-```
-
-## Usage in the workflow
-
-```
-name: JAVA-PR
-on: [pull_request]
-jobs:
-
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set up JDK 10
-        uses: actions/setup-java@v1
+          java-version: 11
+          distribution: 'zulu'
+      - name: Set up Maven
+        uses: tradeshift/actions-setup-maven@v4.4
         with:
-          java-version: 10
-
+          maven-version: 3.6.3
       - name: Configure maven
-        uses: tradeshift/actions-maven@v1
+        uses: tradeshift/actions-setup-java-mtls@debug
         with:
+          java-version: "${{ steps.setupJava.outputs.version }}"
           maven-settings: ${{ secrets.MAVEN_SETTINGS }}
-          maven-security-settings: ${{ secrets.MAVEN_SECURITY }}
-          maven-p12-keystore: ${{ secrets.MAVEN_P12 }}
-          maven-p12-keystore-password: ${{ secrets.MAVEN_P12_PASSWORD }}
-          company-rootca: ${{ secrets.CACERT }}
-
-      - name: Build with Maven
+          maven-security: ${{ secrets.MAVEN_SECURITY }}
+          maven-p12: ${{ secrets.MAVEN_P12 }}
+          maven-p12-password: ${{ secrets.MAVEN_P12_PASSWORD }}
+          mtls-cacert: ${{ secrets.MTLS_CACERT }}
+      - name: Compile
         run: |
-          mvn -Dspring.profiles.active=local clean package -DskipTests
+          mvn -B compile
+      - name: Test
+        run: |
+          mvn -B -Dmaven.test.failure.ignore=true install javadoc:javadoc
 
 ```
-
-Pay attention to the "Configure maven" step. All input parameters are mandatory.
