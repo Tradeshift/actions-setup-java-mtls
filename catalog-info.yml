@@ -1,11 +1,11 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: actions-maven
+  name: actions-setup-java-mtls
   description: |
-    Github action for building Java based projects that are using Maven
+    Github action for configuring certificates to support MTLS for Java based projects that are using Maven
   annotations:
-    github.com/project-slug: Tradeshift/actions-maven
+    github.com/project-slug: Tradeshift/actions-setup-java-mtls
   tags:
     - github-action
 spec:

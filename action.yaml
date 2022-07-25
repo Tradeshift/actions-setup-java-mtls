@@ -1,19 +1,22 @@
 name: 'Setup Maven certificates'
 description: 'Setup certificate for maven to be able to access private repository'
 inputs:
+  java-version:
+    description: 'Version of Java used'
+    required: true
   maven-settings:
     description: 'Content of the maven configuration settings file in base64 format'
     required: true
-  maven-security-settings:
+  maven-security:
     description: 'Content of the maven configuration security settings file in base64 format'
     required: true
-  maven-p12-keystore:
+  maven-p12:
     description: 'Base64 encoded content of p12 keystore file used for accessing the private remote maven repository'
     required: true
-  maven-p12-keystore-password:
+  maven-p12-password:
     description: 'Base64 encoded password to access the p12 maven keystore'
     required: true
-  company-rootca:
+  mtls-cacert:
     description: "Base64 encoded content of company's root CA certififcate"
     required: true
 runs:
@@ -22,12 +25,17 @@ runs:
     - id: setup-certificates
       shell: bash
       run: |
+        mkdir ~/certs
+        echo "${{ inputs.maven-p12 }}" | base64 -d > ${HOME}/certs/certificate.p12
+        echo "${{ inputs.mtls-cacert }}" | base64 -d > ${HOME}/certs/rootca.crt
+        echo "export MAVEN_OPTS=\"-Djavax.net.ssl.keyStore=${HOME}/certs/certificate.p12 -Djavax.net.ssl.keyStoreType=pkcs12 -Djavax.net.ssl.keyStorePassword=${{ inputs.maven-p12-password }}\"" \
+        >> ~/.mavenrc
         echo "Configuring maven ..."
         echo "${{ inputs.maven-settings }}" | base64 -d > ${HOME}/.m2/settings.xml
-        echo "${{ inputs.maven-security-settings }}" | base64 -d > ${HOME}/.m2/settings-security.xml
-        mkdir ~/certs
-        echo "${{ inputs.maven-p12-keystore }}" | base64 -d > ${HOME}/certs/certificate.p12
-        echo "${{ inputs.company-rootca }}" | base64 -d > ${HOME}/certs/rootca.crt
-        echo "export MAVEN_OPTS=\"-Djavax.net.ssl.keyStore=${HOME}/certs/certificate.p12 -Djavax.net.ssl.keyStoreType=pkcs12 -Djavax.net.ssl.keyStorePassword=${{ inputs.maven-p12-keystore-password }}\"" \
-        >> ~/.mavenrc
-        sudo ${JAVA_HOME}/bin/keytool -importcert -cacerts -storepass changeit -noprompt -alias mycert -file ~/certs/rootca.crt
+        echo "${{ inputs.maven-security }}" | base64 -d > ${HOME}/.m2/settings-security.xml
+        if [[ "${{ inputs.java-version }}" =~ ^8\..* ]]; then
+            sudo ${JAVA_HOME}/bin/keytool -importcert -keystore ${JAVA_HOME}/jre/lib/security/cacerts -storepass changeit -noprompt -alias mycert -file ~/certs/rootca.crt
+        else
+            sudo ${JAVA_HOME}/bin/keytool -importcert -cacerts -storepass changeit -noprompt -alias mycert -file ~/certs/rootca.crt
+        fi
+        
