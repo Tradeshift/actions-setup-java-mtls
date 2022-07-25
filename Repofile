@@ -4,5 +4,6 @@
     ],
     "topics": [
         "github-action"
-    ]
+    ],
+    "checks": []
 }
