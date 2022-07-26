@@ -35,7 +35,7 @@ jobs:
         with:
           maven-version: 3.6.3
       - name: Configure maven
-        uses: tradeshift/actions-setup-java-mtls@debug
+        uses: tradeshift/actions-setup-java-mtls@v1
         with:
           java-version: "${{ steps.setupJava.outputs.version }}"
           maven-settings: ${{ secrets.MAVEN_SETTINGS }}
