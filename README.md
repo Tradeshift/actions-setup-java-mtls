@@ -22,7 +22,7 @@ name: JAVA-PR
 on: [pull_request]
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: [self-hosted,ts-large-x64-docker-large]
     steps:
       - uses: actions/checkout@v3
       - id: setupJava
