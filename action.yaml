@@ -19,6 +19,10 @@ inputs:
   mtls-cacert:
     description: "Base64 encoded content of company's root CA certififcate"
     required: true
+outputs:
+  JAVA_OPTS:
+    description: "JAVA_OPTS Variable to use in other tools like SBT,grailsw,gradle with client mTLS auth"
+    value: ${{ steps.setup-certificates.outputs.JAVA_OPTS }}
 runs:
   using: "composite"
   steps:
@@ -38,4 +42,4 @@ runs:
         else
             sudo ${JAVA_HOME}/bin/keytool -importcert -cacerts -storepass changeit -noprompt -alias mycert -file ~/certs/rootca.crt
         fi
-        
+        echo "JAVA_OPTS=-Djavax.net.ssl.keyStore=${HOME}/certs/certificate.p12 -Djavax.net.ssl.keyStoreType=pkcs12 -Djavax.net.ssl.keyStorePassword=${{ inputs.maven-p12-password }}" >> $GITHUB_OUTPUT
