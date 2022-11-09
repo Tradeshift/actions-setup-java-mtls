@@ -29,7 +29,7 @@ runs:
     - id: setup-certificates
       shell: bash
       run: |
-        mkdir ~/certs
+        mkdir -p ~/certs
         echo "${{ inputs.maven-p12 }}" | base64 -d > ${HOME}/certs/certificate.p12
         echo "${{ inputs.mtls-cacert }}" | base64 -d > ${HOME}/certs/rootca.crt
         echo "export MAVEN_OPTS=\"-Djavax.net.ssl.keyStore=${HOME}/certs/certificate.p12 -Djavax.net.ssl.keyStoreType=pkcs12 -Djavax.net.ssl.keyStorePassword=${{ inputs.maven-p12-password }}\"" \
