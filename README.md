@@ -8,7 +8,7 @@ Configure certs to access private maven repos to support MTLS.
   - uses: tradeshift/actions-setup-java-mtls@v1
     with:
       java-version: 11
-      maven-settings: ${{ secrets.MAVEN_SETTINGS }}
+      maven-settings: ${{ secrets.MAVEN_SETTINGS_GH_PG }}
       maven-settings: ${{ secrets.MAVEN_SECURITY }}
       maven-p12: ${{ secrets.MAVEN_P12 }}
       maven-p12-password: ${{ secrets.MAVEN_P12_PASSWORD }}
@@ -38,7 +38,7 @@ jobs:
         uses: tradeshift/actions-setup-java-mtls@v1
         with:
           java-version: "${{ steps.setupJava.outputs.version }}"
-          maven-settings: ${{ secrets.MAVEN_SETTINGS }}
+          maven-settings: ${{ secrets.MAVEN_SETTINGS_GH_PG }}
           maven-security: ${{ secrets.MAVEN_SECURITY }}
           maven-p12: ${{ secrets.MAVEN_P12 }}
           maven-p12-password: ${{ secrets.MAVEN_P12_PASSWORD }}
