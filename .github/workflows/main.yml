@@ -9,7 +9,7 @@ jobs:
     # Run on non-fork branches only
     if: ${{ !github.event.fork }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: tradeshift/actions-semantic-release@v2
         id: semantic-release
         with:
